@@ -58,7 +58,7 @@ class DataIngestion(omni.ext.IExt):
     
     API_KEY = ''
     DATA_FOLDER = ''
-    DATASET = ''
+    DATASET = 'training'
 
     def on_startup(self, ext_id):
         print("[edgeimpulse.dataingestion] Edge Impulse Data Ingestion startup")
@@ -95,7 +95,7 @@ class DataIngestion(omni.ext.IExt):
                     dataset_type_label = ui.Label("Dataset", width=70)
                     ui.Spacer(width=8)
                     dataset_type = ui.StringField(name="dataset")
-                    dataset_type.model.set_value("training, testing, or anomaly")
+                    dataset_type.model.set_value("training, testing, or anomaly (default = training)")
                     dataset_type.model.add_value_changed_fn(lambda m, label=dataset_type_label: getDatasetType(dataset_type_label, m.get_value_as_string()))
                     ui.Spacer(width=3)
 
