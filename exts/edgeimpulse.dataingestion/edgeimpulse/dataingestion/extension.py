@@ -9,7 +9,7 @@ from functools import partial
 import requests
 import os
 
-def upload_data(api_key, data_folder):
+async def upload_data(api_key, data_folder):
     host = "https://studio.edgeimpulse.com/v1"
 
     for file in os.listdir(data_folder):
@@ -55,7 +55,7 @@ class DataIngestion(omni.ext.IExt):
     def on_startup(self, ext_id):
         print("[edgeimpulse.dataingestion] Edge Impulse Data Ingestion startup")
 
-        self._window = ui.Window("Edge Impulse Data Ingestion", auto_resize=True)
+        self._window = ui.Window("Edge Impulse Data Ingestion", width=450, height=155)
         with self._window.frame:
             with ui.VStack(spacing=8):
                 
@@ -83,11 +83,13 @@ class DataIngestion(omni.ext.IExt):
                     ui.Spacer(width=3)
 
                 def on_click():
-                    asyncio.ensure_future(upload_data(self.API_KEY, self.DATA_FOLDER))
+                    #asyncio.ensure_future()
+                    loop = asyncio.get_event_loop()
+                    loop.run_until_complete(upload_data(self.API_KEY, self.DATA_FOLDER))
                 
                 with ui.HStack(height=20):
                     ui.Button("Upload to Edge Impulse", clicked_fn=on_click)
-                
+
 
     def on_shutdown(self):
         print("[edgeimpulse.dataingestion] Edge Impulse Data Ingestion shutdown")
