@@ -1,8 +1,8 @@
-# API Connect Sample Omniverse Extension
+# Edge Impulse Data Ingestion Omniverse Extension
 
-This Sample Omniverse Extension demonstrate how to easily connect to an API. 
+This Omniverse extension allows you to upload data from a specified location on your computer to your Edge Impulse project.
 
-![preview.png](/exts/omni.edgeimpulse.data-ingestion/data/preview.png)
+![preview.png](/exts/edgeimpulse.dataingestion/data/preview.png)
 
 # Extension Project Template
 
@@ -13,12 +13,12 @@ This project was automatically generated.
 
 Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
 
-Look for "omni.example.apiconnect" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
+Look for "edgeimpulse.dataingestion" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
 
 Alternatively, you can launch your app from console with this folder added to search path and your extension enabled, e.g.:
 
 ```
-> app\omni.code.bat --ext-folder exts --enable company.hello.world
+> app\omni.code.bat --ext-folder exts --enable edgeimpulse.dataingestion
 ```
 
 # App Link Setup
@@ -56,13 +56,6 @@ Notice `exts` is repo subfolder with extensions. More information can be found i
 
 To add a link to your *Omniverse Kit* based app go into: Extension Manager -> Gear Icon -> Extension Search Path
 
-## Attribution & Acknowledgements
-
-This Extensions uses the [Huemint.com API](https://huemint.com/about/). Huemint uses machine learning to create unique color schemes. 
-
-Special thanks to Jack Qiao for allowing us to use the Huemint API for this demonstration.
-
-Check out [Huemint.com](https://huemint.com/)
 
 ## Contributing
 The source code for this repository is provided as-is and we are not accepting outside contributions.

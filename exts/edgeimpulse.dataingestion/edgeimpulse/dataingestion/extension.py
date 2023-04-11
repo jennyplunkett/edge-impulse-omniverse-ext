@@ -9,18 +9,6 @@ from functools import partial
 import requests
 import os
 
-# Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
-def some_public_function(x: int):
-    print("[edgeimpulse.dataingestion] some_public_function was called with x: ", x)
-    return x ** x
-
-     
-#hex to float conversion for transforming hex color codes to float values
-def hextofloats(h):
-    #Convert hex rgb string in an RGB tuple (float, float, float)
-    return tuple(int(h[i:i + 2], 16) / 255. for i in (1, 3, 5)) # skip '#'   
-
-
 def upload_data(api_key, data_folder):
     host = "https://studio.edgeimpulse.com/v1"
 
@@ -44,41 +32,61 @@ def upload_data(api_key, data_folder):
         else:
             print('Failed to upload file to Edge Impulse', res.status_code, res.content)
 
+def getPath(label, text):
+    #label.text = f"You wrote '{text}'"
+    DataIngestion.DATA_FOLDER = os.path.normpath(text)
+    #print("Data Path Changed:", DataIngestion.DATA_FOLDER)
+
+def getEIAPIKey(label, text):
+    #label.text = f"You wrote '{text}'"
+    DataIngestion.API_KEY = text
+    #print("Edge Impulse API Key Changed:", DataIngestion.API_KEY)
+
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
 # on_shutdown() is called.
-class MyExtension(omni.ext.IExt):
+class DataIngestion(omni.ext.IExt):
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
     
+    API_KEY = ''
+    DATA_FOLDER = ''
+
     def on_startup(self, ext_id):
         print("[edgeimpulse.dataingestion] Edge Impulse Data Ingestion startup")
 
-        #create a new window        
-        self._window = ui.Window("Edge Impulse Data Ingestion", width=260, height=270)
+        self._window = ui.Window("Edge Impulse Data Ingestion", auto_resize=True)
         with self._window.frame:
-            with ui.VStack(alignment=ui.Alignment.CENTER):
+            with ui.VStack(spacing=8):
                 
-                #ui.Label("Click the button to upload your data",height=30)
-                ui.Label("Data Path", name="header_attribute_name", width=70)
-                ui.StringField(name="path").model.set_value("/data")
+                with ui.HStack(height=20):
+                    ui.Spacer(width=3)
+                    ui.Label("Create a free Edge Impulse account: https://studio.edgeimpulse.com/", height=20, word_wrap=True)
+                    ui.Spacer(width=3)
 
-                ui.Label("EI API Key", name="header_attribute_name", width=70)
-                ui.StringField(name="api_key").model.set_value("ei_02162...")
+                with ui.HStack(height=20):
+                    ui.Spacer(width=3)
+                    data_path_label = ui.Label("Data Path", name="header_attribute_name", width=70)
+                    ui.Spacer(width=8)
+                    data_path = ui.StringField(name="path")
+                    data_path.model.set_value("C:\\Users\\...")
+                    data_path.model.add_value_changed_fn(lambda m, label=data_path_label: getPath(data_path_label, m.get_value_as_string()))
+                    ui.Spacer(width=3)
 
-                api_key = 'ei_021...'
-                data_folder = os.getcwd() + '/edge-impulse-omniverse-ext/data/'
+                with ui.HStack(height=20):
+                    ui.Spacer(width=3)
+                    ei_api_key_label = ui.Label("Edge Impulse API Key", name="header_attribute_name", width=70)
+                    ui.Spacer(width=8)
+                    ei_api_key = ui.StringField(name="ei_api_key")
+                    ei_api_key.model.set_value("ei_02162...")
+                    ei_api_key.model.add_value_changed_fn(lambda m, label=ei_api_key_label: getEIAPIKey(ei_api_key_label, m.get_value_as_string()))
+                    ui.Spacer(width=3)
 
-                #create a button to trigger the api call
                 def on_click():
-                    asyncio.ensure_future(upload_data(api_key, data_folder))
+                    asyncio.ensure_future(upload_data(self.API_KEY, self.DATA_FOLDER))
                 
-                ui.Button("Upload to Edge Impulse", clicked_fn=on_click)
-
-                #we execute the api call once on startup
-                #asyncio.ensure_future(get_colors_from_api(color_widgets))
-
-             
+                with ui.HStack(height=20):
+                    ui.Button("Upload to Edge Impulse", clicked_fn=on_click)
                 
 
     def on_shutdown(self):
