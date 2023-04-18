@@ -9,6 +9,11 @@ from functools import partial
 import requests
 import os
 
+omni.kit.pipapi.install("edgeimpulse")
+
+import edgeimpulse as ei
+# from edgeimpulse_api import Configuration, ApiClient, ProjectsApi
+
 async def upload_data(api_key, data_folder, dataset):
     dataset_types = ["training", "testing", "anomaly"]
     if dataset not in dataset_types:
@@ -111,6 +116,15 @@ class DataIngestion(omni.ext.IExt):
                 with ui.HStack(height=20):
                     ui.Spacer(width=3)
                     results_label = ui.Label("", height=20, word_wrap=True)
+
+                # Create a client object that can connect to our project
+                config = Configuration(host=host, api_key={"ApiKeyAuthentication": api_key})
+                client = ApiClient(config)
+
+                # Get info about the project
+                projects = ProjectsApi(client)
+                project_list = projects.list_projects()
+                print(project_list.projects[0])
                 
 
     def on_shutdown(self):
