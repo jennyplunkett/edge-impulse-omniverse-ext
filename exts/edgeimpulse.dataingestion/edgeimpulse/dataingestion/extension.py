@@ -73,10 +73,12 @@ async def inference_current_frame(api_key, data_folder):
         image_path = os.path.join(data_folder, "Capture1.png")
         input_image = Image.open(image_path)
         input_image = input_image.convert('RGB')
-        input_image = input_image.resize(input_details[0]['shape'][1], input_details[0]['shape'][2])
+        #input_image = tf.image.decode_png(tf.io.read_file(image_path))
+        #input_image = input_image.resize(input_details[0]['shape'][1], input_details[0]['shape'][2])
         input_image = np.array(input_image)
         input_image = input_image.astype(np.float32)
         input_image = np.expand_dims(input_image, axis=0)
+        #input_image = tf.reshape(input_image, [1, input_details[0]['shape'][1], input_details[0]['shape'][2], 4])
         print("Input image shape:", input_image.shape)
 
         # Set the input tensor
@@ -85,11 +87,14 @@ async def inference_current_frame(api_key, data_folder):
         # Perform inference
         interpreter.invoke()
 
+        rects = interpreter.get_tensor(output_details[0]['index'])
+        scores = interpreter.get_tensor(output_details[2]['index'])
+        
         # Get the output tensor
-        output_tensor = interpreter.get_tensor(output_details[0]['index'])
+        #output_tensor = interpreter.get_tensor(output_details[0]['index'])
 
         # Post-process the output
-        res = str("Output probabilities: " + str(output_tensor))
+        res = str("Rects: " + str(rects) + "\nScores: " + str(scores))
     except Exception as e:
         res = str("Error: " + f"{e}")
     return(str(res))
