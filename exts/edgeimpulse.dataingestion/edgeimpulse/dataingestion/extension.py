@@ -72,8 +72,12 @@ async def inference_current_frame(api_key, data_folder):
         # Load and preprocess the input image
         image_path = os.path.join(data_folder, "Capture1.png")
         input_image = Image.open(image_path)
-        #input_image = input_image.resize((input_details[0]['shape'][1], input_details[0]['shape'][2]))
-        input_image = np.expand_dims(input_image, axis=0).astype(np.float32)
+        input_image = input_image.convert('RGB')
+        input_image = input_image.resize(input_details[0]['shape'][1], input_details[0]['shape'][2])
+        input_image = np.array(input_image)
+        input_image = input_image.astype(np.float32)
+        input_image = np.expand_dims(input_image, axis=0)
+        print("Input image shape:", input_image.shape)
 
         # Set the input tensor
         interpreter.set_tensor(input_details[0]['index'], input_image)
@@ -85,7 +89,7 @@ async def inference_current_frame(api_key, data_folder):
         output_tensor = interpreter.get_tensor(output_details[0]['index'])
 
         # Post-process the output
-        print("Output probabilities:", output_tensor)
+        res = str("Output probabilities: " + str(output_tensor))
     except Exception as e:
         res = str("Error: " + f"{e}")
     return(str(res))
